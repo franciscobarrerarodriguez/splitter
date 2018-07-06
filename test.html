@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            background: gray;
+            
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;            
+        }
+
+        .splitter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: honeydew;
+            /* position: relative; */
+            min-height: 100%;
+            width: 100%;
+            height: 100%;
+
+        }
+        
+        .splitter .splitter-item {
+            display: flex;
+            /* justify-content: center; */
+            align-items: center
+        }
+    </style>
+</head>
+<body>
+    <div class="splitter">
+        <div class="splitter-item">
+            <img src="accord_1.png">
+        </div>
+        <div class="splitter-item" style="width: 50%">
+            <img src="accord_8.png">
+        </div>
+    </div>
+    <script>
+        class Splitter {
+              /**
+   * Create a Siema.
+   * @param {Object} userSettings - Optional settings object.
+   */
+  constructor(userSettings) {
+//     // Merge defaults with user's settings
+this.config = Splitter.mergeSettings(userSettings);
+
+console.log(this.config)
+
+    // Resolve selector's type
+    this.selector = typeof this.config.selector === 'string' ? document.querySelector(this.config.selector) : this.config.selector;
+
+   // Early throw if selector doesn't exists
+    if (this.selector === null) {
+      throw new Error('Something wrong with your selector 😭');
+    }
+
+    this.calculateMeassures();
+    // Build markup and apply required styling to elements
+    this.init();
+    }
+
+      /**
+     * Overrides default settings with custom ones.
+     * @param {Object} options - Optional settings object.
+     * @returns {Object} - Custom Split settings.
+     */
+     static mergeSettings(userSettings) {
+        let settings = {
+            selector: '.splitter',
+            contentWidth: 50,
+            splitWidth: 50,
+            draggable: false,
+            onInit: () => {},
+            onChange: () => {},
+        };
+
+        for (let attrName in userSettings) {
+            settings[attrName] = userSettings[attrName];
+        }
+        return settings;
+    }
+
+    calculateMeassures() {
+        this.config.contentWidthPx = (this.config.contentWidth * this.selector.offsetWidth) / 100;
+        this.config.marginLeft = (((100 - this.config.contentWidth) / 2) * this.selector.offsetWidth) / 100;
+    }
+
+    init() {
+        // console.log(this.selector.children)
+        // this.selector.style.background = 'red';
+        // this.selector.style.position = 'relative';
+        for (let i = 0; i < this.selector.childElementCount; i++) {
+            this.selector.children[i].style.position = 'absolute';
+            this.selector.children[i].style.top = 0;
+            this.selector.children[i].style.left = 0; 
+            this.selector.children[i].style.width = '100%';
+            this.selector.children[i].style.height = '100%';
+            // this.selector.children[i].style.display = 'flex';
+            // this.selector.children[i].style.alignItems = 'center';
+            this.selector.children[i].style.zIndex = i;
+
+            this.selector.children[i].children[0].style.width = this.config.contentWidthPx + 'px';
+            this.selector.children[i].children[0].style.marginLeft = this.config.marginLeft + 'px';
+        }
+        
+        this.selector.children[this.selector.childElementCount - 1].style.overflowX = 'hidden';
+        this.selector.children[this.selector.childElementCount - 1].style.width = this.config.splitWidth + '%';
+        // console.log()
+
+
+    }
+
+
+
+}
+
+var splitter = new Splitter({contentWidth: 100});
+    </script>
+</body>
+</html>
